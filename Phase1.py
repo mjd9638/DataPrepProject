@@ -5,21 +5,31 @@ Date: 9/9/2021
 """
 
 import sys
-import pandas
+import pandas as pd
+
+
+def merge_databases(names, akas, basics, ratings):
+    """
+    Merges the databases together.
+    """
+    final_df = pd.merge(basics, ratings, on='tconst', how='left')
+    akas.rename(columns={'titleId': 'tconst'}, inplace=True)
+    print(akas.columns, '\n')
+    final_df = pd.merge(final_df, akas, on='tconst', how='left')
+    print(final_df.columns, '\n')
+    names = names.explode('knownForTitles')
+    names.rename(columns={'knownForTitles': 'tconst'}, inplace=True)
+    final_df = pd.merge(final_df, names, on='tconst', how='left')
+    print(final_df.head())
 
 
 def main(argv):
-    # name_basics_df = pandas.read_csv("name.basics.tsv", sep='\t')
-    # title_akas_df = pandas.read_csv("title.akas.tsv", sep='\t', dtype={'titleId': 'str','ordering': 'int',
-    #                                                                    'title': 'str', 'region': 'str',
-    #                                                                    'language': 'str', 'types': 'str',
-    #                                                                    'attributes': 'str', 'isOriginalTitle': 'str'})
-    # title_basics_df = pandas.read_csv("title.basics.tsv", sep='\t', dtype={'tconst': 'str', 'titleType': 'str',
-    #                                                                        'primaryTitle': 'str',
-    #                                                                        'originalTitle': 'str', 'isAdult': 'str',
-    #                                                                        'startYear': 'str', 'endYear': 'str',
-    #                                                                        'runtimeMinutes': 'str', 'genres': 'str'})
-    title_ratings_df = pandas.read_csv("title.ratings.tsv", sep='\t')
+    #pd.set_option('display.max_columns', None)
+    name_basics_df = pd.read_csv("name.basics.tsv", sep='\t', dtype=str, converters={'knownForTitles': lambda x: x.split(',')})
+    title_akas_df = pd.read_csv("title.akas.tsv", sep='\t', dtype=str)
+    title_basics_df = pd.read_csv("title.basics.tsv", sep='\t', dtype=str)
+    title_ratings_df = pd.read_csv("title.ratings.tsv", sep='\t')
+    merge_databases(name_basics_df, title_akas_df, title_basics_df, title_ratings_df)
 
 
 if __name__ == '__main__':

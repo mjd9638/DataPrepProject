@@ -1,4 +1,4 @@
-# Data Preparation and Cleaning Project
+# Data Cleaning and Preparation Project
 
 title.akas.tsv.gz - Contains the following information for titles:
 - titleId (string) - a tconst, an alphanumeric unique identifier of the title

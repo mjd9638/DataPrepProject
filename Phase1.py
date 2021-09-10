@@ -29,7 +29,7 @@ def split_attributes(dataset):
     attributes = ['types', 'attributes', 'genres', 'primaryProfession']
     for each in attributes:
         dataset[each] = dataset[each].str.split(',')
-        dataset[each] = dataset.explode(each)
+        dataset = dataset.explode(each)
     print(dataset.head())
     dataset.to_csv('final.tsv', sep='\t')
 

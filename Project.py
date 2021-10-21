@@ -36,7 +36,7 @@ def split_attributes(dataset):
 
 def phase_2(final):
     """
-    This function replaces all \N values in the dataframe with None.
+    This function replaces all \\N values in the dataframe with None.
     Counts the total number of entries and number of unique entries in each column
     Gets the max and min of each numerical attribute
     :param final: final tsv file as dataframe
@@ -65,6 +65,24 @@ def phase_2(final):
     # print("getting freq dist of isAdult")
     # print(final['isAdult'].value_counts())
 
+def phase_3(df):
+    """
+
+    :param df: the dataframe
+    :return:
+    """
+    print("getting mean, median, mode, min and max values for each column...")
+    list_num_cols = ['deathYear', 'birthYear', 'ordering', 'numVotes', 'averageRating', 'runtimeMinutes', 'endYear',
+                     'startYear']
+    for col in list_num_cols:
+        df[col] = pd.to_numeric(df[col], errors='coerce')
+        df[col].dropna(inplace=True)
+        print("mean of " + str(col) + ": ", df[col].mean())
+        print("median of " + str(col) + ": ", df[col].median())
+        print("mode of " + str(col) + ": ", df[col].mode())
+        print("min of " + str(col) + ": ", df[col].min())
+        print("max of " + str(col) + ": ", df[col].max())
+        print()
 
 def main(argv):
     # pd.set_option('display.max_columns', None)
@@ -92,7 +110,7 @@ def main(argv):
     # split_attributes(final)
 
     # Phase 2:
-    phase_2(final)
+    phase_3(final)
 
 
 if __name__ == '__main__':

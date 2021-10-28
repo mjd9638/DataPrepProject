@@ -5,7 +5,11 @@ Date: 9/9/2021
 """
 
 import sys
+
+import matplotlib.pyplot as plt
 import pandas as pd
+import seaborn as sns
+import time
 
 
 def merge_databases(names, akas, basics, ratings):
@@ -67,25 +71,42 @@ def phase_2(final):
 
 def phase_3(df):
     """
-
-    :param df: the dataframe
-    :return:
+    Satisfies all requirements for phase 3
+    :param df: the dataframe with all the movie data in it
     """
     print("getting mean, median, mode, min and max values for each column...")
+    # list of all columns with numeric values
     list_num_cols = ['deathYear', 'birthYear', 'ordering', 'numVotes', 'averageRating', 'runtimeMinutes', 'endYear',
                      'startYear']
+    # for each column with numeric values
+
     for col in list_num_cols:
+        # change column's value to numeric
         df[col] = pd.to_numeric(df[col], errors='coerce')
+        # drops all na values in the columns
         df[col].dropna(inplace=True)
+        # call mean, median, mode, min and max values of each column
+        """
         print("mean of " + str(col) + ": ", df[col].mean())
         print("median of " + str(col) + ": ", df[col].median())
         print("mode of " + str(col) + ": ", df[col].mode())
         print("min of " + str(col) + ": ", df[col].min())
         print("max of " + str(col) + ": ", df[col].max())
         print()
+        """
+        # print box plot of the column
+        sns.boxplot(df[col])
+        plt.show()
+    """
+    print(df[df['deathYear'] < 750]["deathYear"].unique())
+    print(df[df['birthYear'] < 750]["birthYear"].unique())
+    print(df[df['ordering'] > 100]["ordering"])
+    print(df[df['numVotes'] > 1800000]["numVotes"])
+    print(df[df['runtimeMinutes'] > 10000]["runtimeMinutes"].unique())
+    """
 
 def main(argv):
-    # pd.set_option('display.max_columns', None)
+    # pd.set_option('display.max_rows', None)
     # # read in names data set
     # print('Reading in names...')
     # name_basics_df = pd.read_csv("name.basics.tsv", sep='\t', dtype=str, converters={'knownForTitles': lambda x: x.split(',')})
@@ -105,11 +126,14 @@ def main(argv):
     # merge_databases(name_basics_df, title_akas_df, title_basics_df, title_ratings_df)
 
     print('Reading in Final...')
+    start = time.time()
     final = pd.read_csv("final.tsv", sep='\t', dtype=str)
+    end = time.time()
+    print("TIME:", end - start)
     # print('Splitting the data...')
     # split_attributes(final)
 
-    # Phase 2:
+    # Phase 3:
     phase_3(final)
 
 

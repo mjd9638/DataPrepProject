@@ -111,7 +111,6 @@ def phase_3(df):
     list_num_cols = ['deathYear', 'birthYear', 'ordering', 'numVotes', 'averageRating', 'runtimeMinutes', 'endYear',
                      'startYear']
     # for each column with numeric values
-
     for col in list_num_cols:
         # change column's value to numeric
         df[col] = pd.to_numeric(df[col], errors='coerce')
@@ -133,7 +132,16 @@ def phase_3(df):
     print(df[df['ordering'] > 100]["ordering"])
     print(df[df['numVotes'] > 1800000]["numVotes"])
     print(df[df['runtimeMinutes'] > 10000]["runtimeMinutes"].unique())
-    # generate and display histograms for non-numeric columns
+    # graph non-numerics
+    non_numeric_graphs(df)
+    # graph remaining numerics
+    df['averageRating'].plot(kind='hist', title='averageRating', xlabel='Rating', bins=10)
+    plt.xlabel('Rating')
+    plt.ylabel('Frequency (Millions)')
+    plt.xticks([x for x in range(11)])
+    plt.show()
+    df[df['startYear'] != r"\N"]['startYear'].value_counts().sort_index().plot(kind='line', title='startYear', xlabel='Year', ylabel='Count (Millions)')
+    plt.show()
 
 
 def non_numeric_graphs(df):
@@ -163,7 +171,7 @@ def non_numeric_graphs(df):
 
 def main(argv):
     """ Runs the program """
-    # pd.set_option('display.max_columns', None)
+    pd.set_option('display.max_rows', None)
     print('Reading in Final...')
     start = time.time()
     final = pd.read_csv("final.tsv", sep='\t', dtype=str)
@@ -177,7 +185,7 @@ def main(argv):
     #phase_2(final)
 
     # Phase 3:
-    phase_3(final)
+    #phase_3(final)
 
 
 if __name__ == '__main__':

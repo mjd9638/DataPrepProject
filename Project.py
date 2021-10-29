@@ -5,7 +5,11 @@ Date: 9/9/2021
 """
 
 import sys
+
+import matplotlib.pyplot as plt
 import pandas as pd
+import seaborn as sns
+import time
 
 
 def merge_databases(names, akas, basics, ratings):
@@ -84,6 +88,27 @@ def phase_3(df):
         print("max of " + str(col) + ": ", df[col].max())
         print()
 
+
+def histograms(df):
+    cols = ['titleType', 'isAdult', 'language', 'types', 'isOriginalTitle']
+    for col in cols:
+        print(df[col].value_counts())
+    # df['titleType'].value_counts().plot(kind='bar', title='titleType', xlabel='Title', ylabel='Count (Tens of Millions)')
+    # plt.xticks(rotation=0)
+    # plt.show()
+    # df['isAdult'].value_counts().plot.pie(title='isAdult', ylabel='', autopct='%1.1f%%')
+    # plt.axis('equal')
+    # plt.show()
+    # df[df['language'] != r"\N"]['language'].value_counts().plot(kind='bar', title='language', xlabel='Language', ylabel='Count')
+    # plt.xticks(rotation=0)
+    # plt.show()
+    df[df['types'] != r"\N"]['types'].value_counts().plot(kind='bar', title='types', xlabel='Type', ylabel='Count (Tens of Millions)')
+    plt.xticks(rotation=70)
+    plt.show()
+    df[df['isOriginalTitle'] != r"\N"]['isOriginalTitle'].value_counts().plot.pie(title='isOriginalTitle', ylabel='', autopct='%1.3f%%')
+    plt.show()
+
+
 def main(argv):
     # pd.set_option('display.max_columns', None)
     # # read in names data set
@@ -110,7 +135,8 @@ def main(argv):
     # split_attributes(final)
 
     # Phase 2:
-    phase_3(final)
+    #phase_3(final)
+    histograms(final)
 
 
 if __name__ == '__main__':

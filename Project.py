@@ -1,11 +1,10 @@
 """
-@Authors: Ty Minnick. Mike Dortz, Maham Imtiaz, Deryke Tang
-Description: This file contains preliminary data mining for phase 1 of the project.
+@Authors: Ty Minnick, Mike Dortz, Maham Imtiaz, Deryke Tang
+Description: This file contains code for the semester project.
 Date: 9/9/2021
 """
 
 import sys
-
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
@@ -30,12 +29,44 @@ def merge_databases(names, akas, basics, ratings):
 
 
 def split_attributes(dataset):
+    """
+    Splits attributes with multiple values into multiple lines.
+    :param dataset: the merged dataset
+    """
     attributes = ['types', 'attributes', 'genres', 'primaryProfession']
     for each in attributes:
         dataset[each] = dataset[each].str.split(',')
         dataset = dataset.explode(each)
     print(dataset.head())
     dataset.to_csv('final.tsv', sep='\t', index=False)
+
+
+def phase_1():
+    """
+    Satisfies all requirements for phase 1
+    """
+    # read in names data set
+    print('Reading in names...')
+    name_basics_df = pd.read_csv("name.basics.tsv", sep='\t', dtype=str,
+                                 converters={'knownForTitles': lambda x: x.split(',')})
+    # read in akas data set
+    print('Reading in akas...')
+    title_akas_df = pd.read_csv("title.akas.tsv", sep='\t', dtype=str)
+    # read in basics data set
+    print('Reading in basics...')
+    title_basics_df = pd.read_csv("title.basics.tsv", sep='\t', dtype=str)
+    # read in ratings data set
+    print('Reading in ratings...')
+    title_ratings_df = pd.read_csv("title.ratings.tsv", sep='\t')
+    # remove all foreign entries from akas data set
+    title_akas_df = title_akas_df[title_akas_df['region'] == 'US']
+    # remove all non-movie entries from basics data set
+    title_basics_df = title_basics_df[
+        (title_basics_df['titleType'] == 'movie') | (title_basics_df['titleType'] == 'tvMovie')]
+    merge_databases(name_basics_df, title_akas_df, title_basics_df, title_ratings_df)
+    final = pd.read_csv("final.tsv", sep='\t', dtype=str)
+    print('Splitting the data...')
+    split_attributes(final)
 
 
 def phase_2(final):
@@ -69,6 +100,7 @@ def phase_2(final):
     # print("getting freq dist of isAdult")
     # print(final['isAdult'].value_counts())
 
+
 def phase_3(df):
     """
     Satisfies all requirements for phase 3
@@ -86,39 +118,42 @@ def phase_3(df):
         # drops all na values in the columns
         df[col].dropna(inplace=True)
         # call mean, median, mode, min and max values of each column
-        """
         print("mean of " + str(col) + ": ", df[col].mean())
         print("median of " + str(col) + ": ", df[col].median())
         print("mode of " + str(col) + ": ", df[col].mode())
         print("min of " + str(col) + ": ", df[col].min())
         print("max of " + str(col) + ": ", df[col].max())
         print()
-        """
-        # print box plot of the column
+        # display box plot of the column
         sns.boxplot(df[col])
         plt.show()
-    """
+    # print the outliers
     print(df[df['deathYear'] < 750]["deathYear"].unique())
     print(df[df['birthYear'] < 750]["birthYear"].unique())
     print(df[df['ordering'] > 100]["ordering"])
     print(df[df['numVotes'] > 1800000]["numVotes"])
     print(df[df['runtimeMinutes'] > 10000]["runtimeMinutes"].unique())
+    # generate and display histograms for non-numeric columns
+
+
+def non_numeric_graphs(df):
     """
-
-
-def histograms(df):
+    Generates and display histograms for non-numeric columns
+    :param df:
+    :return:
+    """
     cols = ['titleType', 'isAdult', 'language', 'types', 'isOriginalTitle']
     for col in cols:
         print(df[col].value_counts())
-    # df['titleType'].value_counts().plot(kind='bar', title='titleType', xlabel='Title', ylabel='Count (Tens of Millions)')
-    # plt.xticks(rotation=0)
-    # plt.show()
-    # df['isAdult'].value_counts().plot.pie(title='isAdult', ylabel='', autopct='%1.1f%%')
-    # plt.axis('equal')
-    # plt.show()
-    # df[df['language'] != r"\N"]['language'].value_counts().plot(kind='bar', title='language', xlabel='Language', ylabel='Count')
-    # plt.xticks(rotation=0)
-    # plt.show()
+    df['titleType'].value_counts().plot(kind='bar', title='titleType', xlabel='Title', ylabel='Count (Tens of Millions)')
+    plt.xticks(rotation=0)
+    plt.show()
+    df['isAdult'].value_counts().plot.pie(title='isAdult', ylabel='', autopct='%1.1f%%')
+    plt.axis('equal')
+    plt.show()
+    df[df['language'] != r"\N"]['language'].value_counts().plot(kind='bar', title='language', xlabel='Language', ylabel='Count')
+    plt.xticks(rotation=0)
+    plt.show()
     df[df['types'] != r"\N"]['types'].value_counts().plot(kind='bar', title='types', xlabel='Type', ylabel='Count (Tens of Millions)')
     plt.xticks(rotation=70)
     plt.show()
@@ -127,32 +162,19 @@ def histograms(df):
 
 
 def main(argv):
+    """ Runs the program """
     # pd.set_option('display.max_columns', None)
-    # # read in names data set
-    # print('Reading in names...')
-    # name_basics_df = pd.read_csv("name.basics.tsv", sep='\t', dtype=str, converters={'knownForTitles': lambda x: x.split(',')})
-    # # read in akas data set
-    # print('Reading in akas...')
-    # title_akas_df = pd.read_csv("title.akas.tsv", sep='\t', dtype=str)
-    # # read in basics data set
-    # print('Reading in basics...')
-    # title_basics_df = pd.read_csv("title.basics.tsv", sep='\t', dtype=str)
-    # # read in ratings data set
-    # print('Reading in ratings...')
-    # title_ratings_df = pd.read_csv("title.ratings.tsv", sep='\t')
-    # # remove all foreign entries from akas data set
-    # title_akas_df = title_akas_df[title_akas_df['region'] == 'US']
-    # # remove all non-movie entries from basics data set
-    # title_basics_df = title_basics_df[(title_basics_df['titleType'] == 'movie') | (title_basics_df['titleType'] == 'tvMovie')]
-    # merge_databases(name_basics_df, title_akas_df, title_basics_df, title_ratings_df)
-
     print('Reading in Final...')
     start = time.time()
     final = pd.read_csv("final.tsv", sep='\t', dtype=str)
     end = time.time()
     print("TIME:", end - start)
-    # print('Splitting the data...')
-    # split_attributes(final)
+
+    # Phase 1:
+    #phase_1()
+
+    # Phase 2:
+    #phase_2(final)
 
     # Phase 3:
     phase_3(final)

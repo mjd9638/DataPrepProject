@@ -142,6 +142,7 @@ def phase_3(df):
     plt.show()
     df[df['startYear'] != r"\N"]['startYear'].value_counts().sort_index().plot(kind='line', title='startYear', xlabel='Year', ylabel='Count (Millions)')
     plt.show()
+    bivariates(df)
 
 
 def non_numeric_graphs(df):
@@ -166,6 +167,35 @@ def non_numeric_graphs(df):
     plt.xticks(rotation=70)
     plt.show()
     df[df['isOriginalTitle'] != r"\N"]['isOriginalTitle'].value_counts().plot.pie(title='isOriginalTitle', ylabel='', autopct='%1.3f%%')
+    plt.show()
+
+
+def bivariates(df):
+    """
+    Generates and displays bivariate graphs.
+    :param df: the merged dataset
+    """
+    df['averageRating'] = pd.to_numeric(df['averageRating'], errors='coerce')
+    df['numVotes'] = pd.to_numeric(df['numVotes'], errors='coerce')
+    df['isAdult'] = pd.to_numeric(df['isAdult'], errors='coerce')
+    df['startYear'] = pd.to_numeric(df['isAdult'], errors='coerce')
+    df['runtimeMinutes'] = pd.to_numeric(df['runtimeMinutes'], errors='coerce')
+    df.plot.scatter(x='averageRating', y='numVotes')
+    plt.title("Average Rating vs. Number of Votes")
+    plt.ylabel("numVotes (millions)")
+    plt.show()
+    pd.crosstab(df[df['language'] != r"\N"]['language'], df['titleType']).plot.bar()
+    plt.xticks(rotation=0)
+    plt.title("Title type vs. Language")
+    plt.ylabel("Count")
+    plt.show()
+    df.plot(x='numVotes', y='runtimeMinutes', kind='scatter', color='orange')
+    plt.title("Run Time vs. Number of Votes")
+    plt.xlabel("numVotes (millions)")
+    plt.show()
+    pd.crosstab(df['genres'], df['isAdult']).plot.bar()
+    plt.title("Adult title vs. Genre")
+    plt.ylabel("Count (millions)")
     plt.show()
 
 

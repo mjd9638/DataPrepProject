@@ -140,7 +140,8 @@ def phase_3(df):
     plt.ylabel('Frequency (Millions)')
     plt.xticks([x for x in range(11)])
     plt.show()
-    df[df['startYear'] != r"\N"]['startYear'].value_counts().sort_index().plot(kind='line', title='startYear', xlabel='Year', ylabel='Count (Millions)')
+    df[df['startYear'] != r"\N"]['startYear'].value_counts().sort_index().plot(kind='line', title='startYear',
+                                                                               xlabel='Year', ylabel='Count (Millions)')
     plt.show()
     bivariates(df)
 
@@ -154,19 +155,23 @@ def non_numeric_graphs(df):
     cols = ['titleType', 'isAdult', 'language', 'types', 'isOriginalTitle']
     for col in cols:
         print(df[col].value_counts())
-    df['titleType'].value_counts().plot(kind='bar', title='titleType', xlabel='Title', ylabel='Count (Tens of Millions)')
+    df['titleType'].value_counts().plot(kind='bar', title='titleType', xlabel='Title',
+                                        ylabel='Count (Tens of Millions)')
     plt.xticks(rotation=0)
     plt.show()
     df['isAdult'].value_counts().plot.pie(title='isAdult', ylabel='', autopct='%1.1f%%')
     plt.axis('equal')
     plt.show()
-    df[df['language'] != r"\N"]['language'].value_counts().plot(kind='bar', title='language', xlabel='Language', ylabel='Count')
+    df[df['language'] != r"\N"]['language'].value_counts().plot(kind='bar', title='language', xlabel='Language',
+                                                                ylabel='Count')
     plt.xticks(rotation=0)
     plt.show()
-    df[df['types'] != r"\N"]['types'].value_counts().plot(kind='bar', title='types', xlabel='Type', ylabel='Count (Tens of Millions)')
+    df[df['types'] != r"\N"]['types'].value_counts().plot(kind='bar', title='types', xlabel='Type',
+                                                          ylabel='Count (Tens of Millions)')
     plt.xticks(rotation=70)
     plt.show()
-    df[df['isOriginalTitle'] != r"\N"]['isOriginalTitle'].value_counts().plot.pie(title='isOriginalTitle', ylabel='', autopct='%1.3f%%')
+    df[df['isOriginalTitle'] != r"\N"]['isOriginalTitle'].value_counts().plot.pie(title='isOriginalTitle', ylabel='',
+                                                                                  autopct='%1.3f%%')
     plt.show()
 
 
@@ -199,25 +204,81 @@ def bivariates(df):
     plt.show()
 
 
+def phase_4(final):
+
+
+    """
+    TODO: endyear: remove column
+    TODO: runtime_minutes: replace nan with median
+    TODO: genres: replace nan with Unknown
+    averageRating: replace with median
+    numVotes: replace with median (rounded)
+    ordering: remove column
+    title: replace with Unknown
+    region: remove record
+    language: replace with Unknown
+    types: replace with imdbDisplay
+    attributes: replace with None
+    isOriginalTitle: no missing values after removing non-US values (?)
+    nconst: no blanks
+    birthyear: replace with -1
+    deathyear: replace with -1
+    primaryprofession: unknown
+    """
+    # print('getting only US values')
+    # final = final[final['region'].notna()]
+    # print('writing to file')
+    # final.to_csv('phase_4_final.tsv', sep='\t', index=False)
+
+    # remove COLUMNS = endYear, ordering
+    final.drop(['endYear', 'ordering'], axis=1, inplace=True)
+
+    # replace NA with Unknown for the following columns
+    unknown_nan_attr = ['genres', 'title', 'language', 'primaryProfession']
+    for attr in unknown_nan_attr:
+        final[attr].fillna('Unknown', inplace=True)
+
+    median_runTimeMinutes = 100
+    final['runtimeMinutes'].fillna(median_runTimeMinutes, inplace=True)
+
+    median_avgRating = 6.4
+    final['averageRating'].fillna(median_avgRating, inplace=True)
+
+    final['numVotes'].fillna(3730, inplace=True)
+
+    final['types'].fillna('imdbDisplay', inplace=True)
+
+    final['attributes'].fillna('None', inplace=True)
+
+    final['birthYear'].fillna(-1, inplace=True)
+
+    final['deathYear'].fillna(-1, inplace=True)
+
+    final.to_csv('phase_4_final_new.tsv', sep='\t', index=False)
+
+
 def main(argv):
     """ Runs the program """
     pd.set_option('display.max_rows', None)
     print('Reading in Final...')
     start = time.time()
-    final = pd.read_csv("final.tsv", sep='\t', dtype=str)
+    # final = pd.read_csv("final.tsv", sep='\t', dtype=str, na_values='\\N')
+    final = pd.read_csv("phase_4_final.tsv", sep='\t', dtype=str, na_values='\\N')
     end = time.time()
     print("TIME:", end - start)
 
     # Phase 1:
-    #phase_1()
+    # phase_1()
 
     # Phase 2:
-    #phase_2(final)
+    # phase_2(final)
 
     # Phase 3:
-    #phase_3(final)
+    # phase_3(final)
+
+    # Phase 4:
+    phase_4(final)
 
 
 if __name__ == '__main__':
     main(sys.argv[1:])
-

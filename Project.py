@@ -204,9 +204,7 @@ def bivariates(df):
     plt.show()
 
 
-def phase_4(final):
-
-
+def  phase_4_remove_missing(final):
     """
     TODO: endyear: remove column
     TODO: runtime_minutes: replace nan with median
@@ -257,13 +255,84 @@ def phase_4(final):
     final.to_csv('phase_4_final_new.tsv', sep='\t', index=False)
 
 
+def phase_4_normalize(final):
+    """
+    Normalize the following:
+    runtimeMinutes
+    AverageRating
+    numVotes
+    """
+
+    print('converting runtime minutes to int')
+    final['runtimeMinutes'] = final['runtimeMinutes'].astype(int)
+
+    print('normalizing runtime minutes')
+    runtime_min_mean = final['runtimeMinutes'].mean()
+    runtime_min_std = final['runtimeMinutes'].std()
+    # mean normalization of runtimeMinutes
+    final['runtimeMinutes'] = (final['runtimeMinutes'] - runtime_min_mean) / runtime_min_std
+
+    print('converting avg rating to float')
+    final['averageRating'] = final['averageRating'].astype(float)
+
+    print('normalizing avg rating')
+    averageRating_mean = final['averageRating'].mean()
+    averageRating_std = final['averageRating'].std()
+
+    # mean normalization of AverageRating
+    final['averageRating'] = (final['averageRating'] - averageRating_mean) / averageRating_std
+
+    print('converting numVotes to float')
+    final['numVotes'] = final['numVotes'].astype(float)
+
+    print('normalizing numVotes')
+    # mean normalization of numVotes
+    numVotes_mean = final['numVotes'].mean()
+    numVotes_std = final['numVotes'].std()
+
+    final['numVotes'] = (final['numVotes'] - numVotes_mean) / numVotes_std
+
+    print('writing normalized data to file')
+    final.to_csv('phase_4_final_normalized.tsv', sep='\t', index=False)
+
+
+def phase_4_remove_invalid(final):
+    """
+    remove invalid year values from teh following:
+    startYear
+    birthYear
+    deathYear
+    """
+
+    print('removing invalid start years')
+    final = final[(final['startYear'].str.len() == 4) | (final['startYear'] == -1)]
+
+    print('removing invalid birth years')
+    final = final[(final['birthYear'].str.len() == 4) | (final['birthYear'] == -1)]
+
+    print('removing invalid death years')
+    final = final[(final['deathYear'].str.len() == 4) | (final['deathYear'] == -1)]
+
+    print('writing final to file')
+    final.to_csv('phase_4_rem_invalid.tsv', sep='\t', index=False)
+
+
 def main(argv):
     """ Runs the program """
     pd.set_option('display.max_rows', None)
     print('Reading in Final...')
     start = time.time()
     # final = pd.read_csv("final.tsv", sep='\t', dtype=str, na_values='\\N')
-    final = pd.read_csv("phase_4_final.tsv", sep='\t', dtype=str, na_values='\\N')
+
+    # reading final for removing missing/ empty values
+    # final = pd.read_csv("phase_4_final.tsv", sep='\t', dtype=str, na_values='\\N')
+
+    # reading dataframe with missing values removed, to remove invalid
+    # final = pd.read_csv("phase_4_final_new.tsv", sep='\t', dtype=str, na_values='\\N')
+
+    # reading normalized data to normalize
+    final = pd.read_csv("phase_4_rem_invalid.tsv", sep='\t', dtype=str, na_values='\\N')
+
     end = time.time()
     print("TIME:", end - start)
 
@@ -277,7 +346,11 @@ def main(argv):
     # phase_3(final)
 
     # Phase 4:
-    phase_4(final)
+    # phase_4_remove_missing(final)
+
+    # phase_4_remove_invalid(final)
+
+    phase_4_normalize(final)
 
 
 if __name__ == '__main__':
